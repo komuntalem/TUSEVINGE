@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylized "T" for Tusevinge -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,30 L74,30 L74,40 L59,40 L59,78 L49,78 L49,40 L34,40 Z" />
+    <!-- Coin Icon -->
+    <path
+        android:fillColor="#FFD700"
+        android:pathData="M75,65 A10,10 0 1,1 75,64.9 Z" />
+    <path
+        android:fillColor="#B8860B"
+        android:pathData="M75,65 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FFFFFF" />
+</vector>

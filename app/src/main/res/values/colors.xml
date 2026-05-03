@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Savings Green Theme -->
+    <color name="savings_primary">#2E7D32</color>
+    <color name="savings_primary_dark">#1B5E20</color>
+    <color name="savings_accent">#FFD700</color>
+
+    <!-- Investment Blue Theme -->
+    <color name="investment_primary">#1565C0</color>
+    <color name="investment_primary_dark">#0D47A1</color>
+    <color name="investment_accent">#FF8F00</color>
+
+    <!-- Royal Purple Theme -->
+    <color name="royal_primary">#6A1B9A</color>
+    <color name="royal_primary_dark">#4A148C</color>
+    <color name="royal_accent">#00E5FF</color>
+</resources>

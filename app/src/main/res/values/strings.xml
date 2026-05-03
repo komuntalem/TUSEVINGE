@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Tusevinge</string>
+    <string name="welcome_user">WELCOME %1$s</string>
+    <string name="balance_format">Balance: UGX %1$,.2f</string>
+    <string name="deposit">Deposit</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="history">Transaction History</string>
+    <string name="logout">Logout</string>
+    <string name="change_theme">Change App Theme</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="preview">Preview</string>
+    <string name="add_profile_photo">Add Profile Photo</string>
+    <string name="choose_photo">Choose Photo</string>
+</resources>
