@@ -6,7 +6,6 @@
     android:background="#ECEFF1"
     android:orientation="vertical">
 
-    <!-- Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -16,310 +15,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#1565C0"
-            android:paddingBottom="8dp"
-            app:title="Dashboard"
-            app:subtitle="Tusevinge Admin"
-            app:titleTextColor="#FFFFFF"
-            app:subtitleTextColor="#80B3FF" />
+            app:title="All Members"
+            app:titleTextColor="#FFFFFF" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            android:hint="Search members..."
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            <!-- Greeting -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Good morning, Admin"
-                android:textColor="#0D1B3E"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="Here's what's happening today"
-                android:textColor="#90A4AE"
-                android:textSize="12sp" />
-
-            <!-- Stat Cards Row -->
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal">
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Total Users - Blue card -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    app:cardBackgroundColor="#1565C0"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="6dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvUsers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:letterSpacing="0.1"
-                            android:text="TOTAL USERS"
-                            android:textColor="#80B3FF"
-                            android:textSize="9sp"
-                            android:textAllCaps="true" />
-
-                        <TextView
-                            android:id="@+id/tvTotalUsers"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="47"
-                            android:textColor="#FFFFFF"
-                            android:textSize="30sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Registered"
-                            android:textColor="#80B3FF"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- Today's Transactions - White card -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="3dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:letterSpacing="0.1"
-                            android:text="TODAY'S TXNs"
-                            android:textColor="#1565C0"
-                            android:textSize="9sp"
-                            android:textAllCaps="true" />
-
-                        <TextView
-                            android:id="@+id/tvTodayTxns"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="12"
-                            android:textColor="#0D1B3E"
-                            android:textSize="30sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="All activity"
-                            android:textColor="#90A4AE"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
-
-            <!-- Total Saved card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardBackgroundColor="#EEF4FF"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="6dp"
-                        android:letterSpacing="0.1"
-                        android:text="TOTAL SAVED (ALL MEMBERS)"
-                        android:textColor="#1565C0"
-                        android:textSize="9sp"
-                        android:textAllCaps="true" />
-
-                    <TextView
-                        android:id="@+id/tvTotalSaved"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="UGX 3,250,000"
-                        android:textColor="#0D1B3E"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Section Header -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:letterSpacing="0.12"
-                android:text="QUICK ACCESS"
-                android:textColor="#1565C0"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:textAllCaps="true" />
-
-            <!-- All Members Nav Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardAllMembers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="3dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="14dp">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardBackgroundColor="#E3F2FD"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="👥"
-                            android:textSize="18sp" />
-                    </androidx.cardview.widget.CardView>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="All Members"
-                            android:textColor="#0D1B3E"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="View registered users"
-                            android:textColor="#90A4AE"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#B0BEC5"
-                        android:textSize="20sp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- All Transactions Nav Card -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardAllTransactions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="3dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="14dp">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="12dp"
-                        app:cardBackgroundColor="#E3F2FD"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="📋"
-                            android:textSize="18sp" />
-                    </androidx.cardview.widget.CardView>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="All Transactions"
-                            android:textColor="#0D1B3E"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Every deposit &amp; withdrawal"
-                            android:textColor="#90A4AE"
-                            android:textSize="11sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="›"
-                        android:textColor="#B0BEC5"
-                        android:textSize="20sp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </LinearLayout>

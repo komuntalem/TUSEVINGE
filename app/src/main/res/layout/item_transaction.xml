@@ -4,32 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    android:clickable="true"
-    android:focusable="true"
     app:cardCornerRadius="12dp"
-    app:cardElevation="3dp">
+    app:cardElevation="2dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="14dp">
+        android:padding="12dp">
 
-        <!-- Avatar circle with initials -->
         <TextView
-            android:id="@+id/tvAvatar"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
+            android:id="@+id/tvTypeIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginEnd="12dp"
-            android:background="@drawable/bg_avatar_circle"
             android:gravity="center"
-            android:text="SR"
-            android:textColor="#1565C0"
-            android:textSize="13sp"
-            android:textStyle="bold" />
+            android:text="⬇"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:background="@drawable/bg_deposit_circle" />
 
-        <!-- Name & phone -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -37,24 +32,23 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvName"
+                android:id="@+id/tvUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Samuel Rujumba"
+                android:text="User Name"
                 android:textColor="#0D1B3E"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvPhone"
+                android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0700 000 000"
+                android:text="Deposit · Mobile Money · Jan 12"
                 android:textColor="#90A4AE"
                 android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- Balance -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,28 +56,21 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvBalance"
+                android:id="@+id/tvAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="350,000"
-                android:textColor="#1565C0"
-                android:textSize="12sp"
+                android:text="+50,000"
+                android:textColor="#2E7D32"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="balance"
-                android:textColor="#90A4AE"
+                android:text="10:30 AM"
+                android:textColor="#B0BEC5"
                 android:textSize="10sp" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="›"
-            android:textColor="#B0BEC5"
-            android:textSize="20sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
