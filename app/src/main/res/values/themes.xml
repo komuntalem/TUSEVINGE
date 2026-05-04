@@ -1,24 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Tusevinge" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/savings_primary</item>
-        <item name="colorPrimaryDark">@color/savings_primary_dark</item>
-        <item name="colorAccent">@color/savings_accent</item>
+    <!-- Base application theme -->
+    <style name="Base.Theme.Tusevinge" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue_primary</item>
+        <item name="android:statusBarColor">@color/blue_primary</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
     </style>
 
     <style name="Theme.Tusevinge" parent="Base.Theme.Tusevinge" />
-
-    <!-- Investment Blue Theme -->
-    <style name="Theme.Tusevinge.Investment" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/investment_primary</item>
-        <item name="colorPrimaryDark">@color/investment_primary_dark</item>
-        <item name="colorAccent">@color/investment_accent</item>
-    </style>
-
-    <!-- Royal Purple Theme -->
-    <style name="Theme.Tusevinge.Royal" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/royal_primary</item>
-        <item name="colorPrimaryDark">@color/royal_primary_dark</item>
-        <item name="colorAccent">@color/royal_accent</item>
-    </style>
 </resources>

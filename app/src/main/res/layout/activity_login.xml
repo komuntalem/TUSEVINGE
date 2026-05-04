@@ -5,8 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient"
     tools:context=".LoginActivity">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/market2"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@null"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/container_card"
@@ -15,6 +25,7 @@
         android:layout_margin="32dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
+        app:cardBackgroundColor="#CCFFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +54,7 @@
                 android:text="Log In"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="#0D47A1"
+                android:textColor="@color/black"
                 android:layout_gravity="center"
                 android:layout_marginTop="8dp"/>
 
@@ -55,6 +66,8 @@
                 android:hint="Name"
                 android:padding="12dp"
                 android:background="@drawable/edittext_bg"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
                 android:layout_marginTop="16dp"/>
 
             <!-- Password -->
@@ -66,6 +79,8 @@
                 android:inputType="textPassword"
                 android:padding="12dp"
                 android:background="@drawable/edittext_bg"
+                android:textColor="@color/black"
+                android:textColorHint="#757575"
                 android:layout_marginTop="12dp"/>
 
             <!-- Login Button -->
@@ -74,8 +89,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="LOG IN"
-                android:backgroundTint="#673AB7"
-                android:textColor="#FFFFFF"
+                android:backgroundTint="@color/blue_primary"
+                android:textColor="@android:color/white"
+                android:padding="12dp"
                 android:layout_marginTop="20dp"/>
 
             <!-- Register Link -->

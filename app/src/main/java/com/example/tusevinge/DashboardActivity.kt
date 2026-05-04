@@ -11,13 +11,12 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import java.io.File
+import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.launch
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -32,6 +31,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private var balance: Double = 0.0
     private val savingsGoal: Double = 100000.0
+    private lateinit var username: String
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -42,15 +42,10 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply theme before super.onCreate
-        val sharedPref = getSharedPreferences("ThemePrefs", Context.MODE_PRIVATE)
-        val themeId = sharedPref.getInt("SelectedTheme", R.style.Theme_Tusevinge)
-        setTheme(themeId)
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        val username = intent.getStringExtra("USERNAME") ?: "User"
+        username = intent.getStringExtra("USERNAME") ?: "User"
 
         // UI references
         tvWelcomeHeader = findViewById(R.id.tvWelcomeHeader)
@@ -68,35 +63,27 @@ class DashboardActivity : AppCompatActivity() {
         checkNotificationPermission()
 
         btnDeposit.setOnClickListener {
-            startActivity(Intent(this, DepositActivity::class.java))
+            val intent = Intent(this, DepositActivity::class.java)
+            intent.putExtra("USERNAME", username)
+            startActivity(intent)
         }
 
         btnWithdraw.setOnClickListener {
-            startActivity(Intent(this, WithdrawActivity::class.java))
+            val intent = Intent(this, WithdrawActivity::class.java)
+            intent.putExtra("USERNAME", username)
+            startActivity(intent)
         }
 
         btnHistory.setOnClickListener {
-            startActivity(Intent(this, HistoryActivity::class.java))
+            val intent = Intent(this, HistoryActivity::class.java)
+            intent.putExtra("USERNAME", username)
+            startActivity(intent)
         }
 
         btnLogout.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
-
-        // Theme switching logic
-        findViewById<Button>(R.id.btnThemeGreen).setOnClickListener { saveTheme(R.style.Theme_Tusevinge) }
-        findViewById<Button>(R.id.btnThemeBlue).setOnClickListener { saveTheme(R.style.Theme_Tusevinge_Investment) }
-        findViewById<Button>(R.id.btnThemePurple).setOnClickListener { saveTheme(R.style.Theme_Tusevinge_Royal) }
-    }
-
-    private fun saveTheme(themeId: Int) {
-        val sharedPref = getSharedPreferences("ThemePrefs", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putInt("SelectedTheme", themeId)
-            apply()
-        }
-        recreate() // Restart activity to apply theme
     }
 
     private fun checkNotificationPermission() {
@@ -124,31 +111,40 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun loadUserProfile(username: String) {
-        val db = AppDatabase.getDatabase(this)
-        lifecycleScope.launch {
-            val user = db.userDao().getUserByName(username)
-            user?.profileImageUri?.let { uriString ->
-                val imgFile = File(uriString)
-                if (imgFile.exists()) {
-                    imgProfile.setImageURI(Uri.fromFile(imgFile))
-                }
+        val dbRef = FirebaseDatabase.getInstance().getReference("users").child(username)
+        dbRef.child("profileImageUri").get().addOnSuccessListener { snapshot ->
+            val uriString = snapshot.value?.toString()
+            if (!uriString.isNullOrEmpty()) {
+                // Using Picasso to load the Firebase Storage URL
+                Picasso.get().load(uriString).placeholder(R.drawable.tusevinge).into(imgProfile)
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        calculateBalance()
+        fetchFirebaseBalance()
     }
 
-    private fun calculateBalance() {
-        val db = AppDatabase.getDatabase(this)
-        val transactionDao = db.transactionDao()
+    private fun fetchFirebaseBalance() {
+        val dbRef = FirebaseDatabase.getInstance().getReference("transactions").child(username)
+        dbRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var currentBalance = 0.0
+                for (child in snapshot.children) {
+                    val type = child.child("type").value.toString()
+                    val amt = child.child("amount").value.toString().toDoubleOrNull() ?: 0.0
+                    if (type.lowercase() == "deposit") currentBalance += amt
+                    else currentBalance -= amt
+                }
+                balance = currentBalance
+                updateDashboard()
+            }
 
-        lifecycleScope.launch {
-            balance = transactionDao.getBalance()
-            updateDashboard()
-        }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@DashboardActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun updateDashboard() {

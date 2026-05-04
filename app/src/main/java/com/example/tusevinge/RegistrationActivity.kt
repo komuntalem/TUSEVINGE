@@ -1,5 +1,6 @@
 package com.example.tusevinge
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,12 +12,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
-import java.io.File
-import java.io.FileOutputStream
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import java.util.*
 
 class RegistrationActivity : AppCompatActivity() {
 
@@ -42,9 +40,6 @@ class RegistrationActivity : AppCompatActivity() {
         val btnSelectPhoto = findViewById<Button>(R.id.btnSelectPhoto)
         imgProfilePreview = findViewById(R.id.imgProfilePreview)
 
-        val db = AppDatabase.getDatabase(this)
-        val userDao = db.userDao()
-
         btnSelectPhoto.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -55,33 +50,8 @@ class RegistrationActivity : AppCompatActivity() {
             val password = edtPassword.text.toString().trim()
 
             if (validateInput(name, email, password)) {
-                lifecycleScope.launch {
-                    try {
-                        val existingUser = userDao.getUserByName(name)
-                        if (existingUser == null) {
-                            
-                            // Save image to internal storage if selected
-                            val internalPath = if (selectedImageUri != null) {
-                                saveImageToInternalStorage(selectedImageUri!!, name)
-                            } else null
-
-                            val newUser = User(
-                                name = name,
-                                email = email,
-                                password = password,
-                                profileImageUri = internalPath
-                            )
-                            userDao.registerUser(newUser)
-                            Toast.makeText(this@RegistrationActivity, "Registration Successful", Toast.LENGTH_SHORT).show()
-                            finish()
-                        } else {
-                            Toast.makeText(this@RegistrationActivity, "User with this name already exists", Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e: Exception) {
-                        Log.e("Registration", "Database error", e)
-                        Toast.makeText(this@RegistrationActivity, "Error accessing database. Please reinstall the app.", Toast.LENGTH_LONG).show()
-                    }
-                }
+                Toast.makeText(this, "Registering user...", Toast.LENGTH_SHORT).show()
+                registerUserWithFirebase(name, email, password)
             }
         }
 
@@ -90,21 +60,56 @@ class RegistrationActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun saveImageToInternalStorage(uri: Uri, name: String): String? = withContext(Dispatchers.IO) {
-        try {
-            val inputStream = contentResolver.openInputStream(uri)
-            val cleanName = name.replace("[^a-zA-Z0-9]".toRegex(), "_")
-            val file = File(filesDir, "profile_$cleanName.jpg")
-            val outputStream = FileOutputStream(file)
-            inputStream?.use { input ->
-                outputStream.use { output ->
-                    input.copyTo(output)
+    private fun registerUserWithFirebase(name: String, email: String, password: String) {
+        val dbRef = FirebaseDatabase.getInstance().getReference("users")
+        
+        dbRef.child(name).get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                Toast.makeText(this, "User already exists", Toast.LENGTH_SHORT).show()
+            } else {
+                if (selectedImageUri != null) {
+                    Toast.makeText(this, "Uploading profile photo...", Toast.LENGTH_SHORT).show()
+                    uploadImageAndRegister(name, email, password)
+                } else {
+                    saveUserData(name, email, password, null)
                 }
             }
-            file.absolutePath
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
+        }.addOnFailureListener {
+            Log.e("Registration", "Firebase Error: ${it.message}")
+            Toast.makeText(this, "Connection error: ${it.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun uploadImageAndRegister(name: String, email: String, password: String) {
+        val storageRef = FirebaseStorage.getInstance().getReference("profile_images/${UUID.randomUUID()}.jpg")
+        
+        storageRef.putFile(selectedImageUri!!).addOnSuccessListener {
+            storageRef.downloadUrl.addOnSuccessListener { uri ->
+                saveUserData(name, email, password, uri.toString())
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Image upload failed", Toast.LENGTH_SHORT).show()
+            saveUserData(name, email, password, null) // Register anyway without photo
+        }
+    }
+
+    private fun saveUserData(name: String, email: String, password: String, imageUri: String?) {
+        val dbRef = FirebaseDatabase.getInstance().getReference("users")
+        val user = mapOf(
+            "name" to name,
+            "email" to email,
+            "password" to password,
+            "profileImageUri" to imageUri
+        )
+
+        dbRef.child(name).setValue(user).addOnSuccessListener {
+            Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, DashboardActivity::class.java)
+            intent.putExtra("USERNAME", name)
+            startActivity(intent)
+            finish()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Failed to save data: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
