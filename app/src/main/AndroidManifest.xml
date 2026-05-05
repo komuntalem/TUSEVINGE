@@ -14,11 +14,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Tusevinge">
+        android:theme="@style/Theme.Tusevinge"
+        tools:targetApi="31">
 
-        <!-- LoginActivity should be the launcher -->
+        <!-- LoginActivity is the entry point -->
         <activity
-            android:name=".LoginActivity"
+            android:name="com.example.tusevinge.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,21 +27,12 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".RegistrationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DepositActivity"
-            android:exported="false" />
-        <activity
-            android:name=".WithdrawActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DashboardActivity"
-            android:exported="false" />
+        <activity android:name="com.example.tusevinge.RegistrationActivity" android:exported="false" />
+        <activity android:name="com.example.tusevinge.HistoryActivity" android:exported="false" />
+        <activity android:name="com.example.tusevinge.DepositActivity" android:exported="false" />
+        <activity android:name="com.example.tusevinge.WithdrawActivity" android:exported="false" />
+        <activity android:name="com.example.tusevinge.DashboardActivity" android:exported="false" />
+
     </application>
 
 </manifest>

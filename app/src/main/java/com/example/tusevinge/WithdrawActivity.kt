@@ -9,10 +9,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import java.text.SimpleDateFormat
 import java.util.*
 
 class WithdrawActivity : AppCompatActivity() {
+    // Updated to your new Database URL
+    private val DB_URL = "https://savingsapp-e1241-default-rtdb.firebaseio.com/"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_withdraw)
@@ -45,16 +49,10 @@ class WithdrawActivity : AppCompatActivity() {
     }
 
     private fun checkBalanceAndWithdraw(username: String, amount: Double, phone: String) {
-        val dbRef = FirebaseDatabase.getInstance().getReference("transactions").child(username)
+        val userRef = FirebaseDatabase.getInstance(DB_URL).getReference("users").child(username)
 
-        dbRef.get().addOnSuccessListener { snapshot ->
-            var currentBalance = 0.0
-            for (child in snapshot.children) {
-                val type = child.child("type").value.toString()
-                val amt = child.child("amount").value.toString().toDoubleOrNull() ?: 0.0
-                if (type.lowercase() == "deposit") currentBalance += amt
-                else currentBalance -= amt
-            }
+        userRef.child("balance").get().addOnSuccessListener { snapshot ->
+            val currentBalance = snapshot.getValue(Double::class.java) ?: 0.0
 
             if (currentBalance >= amount) {
                 processWithdrawal(username, amount, phone)
@@ -73,7 +71,6 @@ class WithdrawActivity : AppCompatActivity() {
             .setCancelable(false)
             .show()
 
-        // Simulate transaction processing
         Handler(Looper.getMainLooper()).postDelayed({
             performFirebaseWithdraw(username, amount, phone)
             progressDialog.dismiss()
@@ -81,20 +78,23 @@ class WithdrawActivity : AppCompatActivity() {
     }
 
     private fun performFirebaseWithdraw(username: String, amount: Double, phone: String) {
-        val dbRef = FirebaseDatabase.getInstance().getReference("transactions").child(username)
+        val rootRef = FirebaseDatabase.getInstance(DB_URL).reference
         val transactionId = UUID.randomUUID().toString()
         val date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
 
         val transaction = mapOf(
             "id" to transactionId,
-            "type" to "Withdraw",
+            "username" to username,
+            "type" to "withdrawal",
             "amount" to amount,
             "date" to date,
+            "timestamp" to System.currentTimeMillis(),
             "phone" to phone,
             "status" to "Completed"
         )
 
-        dbRef.child(transactionId).setValue(transaction).addOnSuccessListener {
+        rootRef.child("transactions").child(transactionId).setValue(transaction).addOnSuccessListener {
+            rootRef.child("users").child(username).child("balance").setValue(ServerValue.increment(-amount))
             showSuccessDialog(amount, phone)
         }.addOnFailureListener {
             Toast.makeText(this, "Withdrawal failed: ${it.message}", Toast.LENGTH_SHORT).show()
@@ -104,24 +104,19 @@ class WithdrawActivity : AppCompatActivity() {
     private fun showSuccessDialog(amount: Double, phone: String) {
         AlertDialog.Builder(this)
             .setTitle("Withdrawal Successful")
-            .setMessage("UGX $amount has been sent to $phone. Please check your mobile money wallet.")
+            .setMessage("UGX $amount has been sent to $phone.")
             .setPositiveButton("Done") { _, _ -> finish() }
             .setCancelable(false)
             .show()
     }
 
     private fun validateInput(amountStr: String, phone: String): Boolean {
-        if (amountStr.isEmpty()) {
-            Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show()
+        if (amountStr.isEmpty() || (amountStr.toDoubleOrNull() ?: 0.0) <= 0) {
+            Toast.makeText(this, "Valid amount required", Toast.LENGTH_SHORT).show()
             return false
         }
-        val amount = amountStr.toDoubleOrNull()
-        if (amount == null || amount <= 0) {
-            Toast.makeText(this, "Please enter a valid positive amount", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        if (phone.isEmpty() || phone.length < 10) {
-            Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
+        if (phone.length < 10) {
+            Toast.makeText(this, "Valid phone number required", Toast.LENGTH_SHORT).show()
             return false
         }
         return true

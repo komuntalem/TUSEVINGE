@@ -7,10 +7,13 @@ import android.os.Looper
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import java.text.SimpleDateFormat
 import java.util.*
 
 class DepositActivity : AppCompatActivity() {
+
+    private val DB_URL = "https://savingsapp-e1241-default-rtdb.firebaseio.com/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +33,10 @@ class DepositActivity : AppCompatActivity() {
         btnConfirm.setOnClickListener {
             val amountStr = edtAmount.text.toString().trim()
             val phone = edtPhoneNumber.text.toString().trim()
-            val method = spnMethod.selectedItem.toString()
 
             if (validateInput(amountStr, phone)) {
                 val amount = amountStr.toDouble()
-                showSimulatedPinPrompt(username, amount, phone, method)
+                showSimulatedPinPrompt(username, amount, phone, spnMethod.selectedItem.toString())
             }
         }
     }
@@ -42,87 +44,66 @@ class DepositActivity : AppCompatActivity() {
     private fun showSimulatedPinPrompt(username: String, amount: Double, phone: String, method: String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("$method Payment")
-        builder.setMessage("You are depositing UGX $amount from $phone. \n\nPlease enter your Mobile Money PIN on the prompt sent to your phone (Simulated).")
+        builder.setMessage("Depositing UGX $amount from $phone. \n\nEnter PIN to authorize.")
 
         val input = EditText(this)
         input.inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD
-        input.hint = "Enter PIN"
         
         val container = LinearLayout(this)
         container.orientation = LinearLayout.VERTICAL
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
+        val params = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         params.setMargins(50, 20, 50, 0)
         container.addView(input, params)
         builder.setView(container)
 
-        builder.setPositiveButton("Authorize") { dialog, _ ->
-            val pin = input.text.toString()
-            if (pin.isNotEmpty()) {
-                processSimulatedTransaction(username, amount)
-            } else {
-                Toast.makeText(this, "PIN is required", Toast.LENGTH_SHORT).show()
-            }
-            dialog.dismiss()
+        builder.setPositiveButton("Authorize") { _, _ ->
+            if (input.text.isNotEmpty()) processSimulatedTransaction(username, amount, phone)
+            else Toast.makeText(this, "PIN is required", Toast.LENGTH_SHORT).show()
         }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.cancel()
-        }
-
+        builder.setNegativeButton("Cancel", null)
         builder.show()
     }
 
-    private fun processSimulatedTransaction(username: String, amount: Double) {
-        val progressDialog = AlertDialog.Builder(this)
-            .setTitle("Processing")
-            .setMessage("Verifying with service provider...")
-            .setCancelable(false)
-            .show()
-
+    private fun processSimulatedTransaction(username: String, amount: Double, phone: String) {
+        val progress = AlertDialog.Builder(this).setMessage("Processing...").setCancelable(false).show()
         Handler(Looper.getMainLooper()).postDelayed({
-            performFirebaseDeposit(username, amount)
-            progressDialog.dismiss()
-        }, 2500)
+            performFirebaseDeposit(username, amount, phone)
+            progress.dismiss()
+        }, 2000)
     }
 
-    private fun performFirebaseDeposit(username: String, amount: Double) {
-        val dbRef = FirebaseDatabase.getInstance().getReference("transactions").child(username)
+    private fun performFirebaseDeposit(username: String, amount: Double, phone: String) {
+        val rootRef = FirebaseDatabase.getInstance(DB_URL).reference
         val transactionId = UUID.randomUUID().toString()
         val date = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
         
         val transaction = mapOf(
             "id" to transactionId,
-            "type" to "Deposit",
+            "username" to username,
+            "type" to "deposit",
             "amount" to amount,
             "date" to date,
-            "status" to "Completed"
+            "timestamp" to System.currentTimeMillis(),
+            "status" to "Completed",
+            "phone" to phone
         )
 
-        dbRef.child(transactionId).setValue(transaction).addOnSuccessListener {
-            AlertDialog.Builder(this)
-                .setTitle("Success")
-                .setMessage("UGX $amount successfully deposited.")
-                .setPositiveButton("OK") { _, _ -> finish() }
-                .show()
+        rootRef.child("transactions").child(transactionId).setValue(transaction).addOnSuccessListener {
+            rootRef.child("users").child(username).child("balance").setValue(ServerValue.increment(amount))
+            AlertDialog.Builder(this).setTitle("Success").setMessage("Deposit of UGX $amount successful!")
+                .setPositiveButton("OK") { _, _ -> finish() }.show()
         }.addOnFailureListener {
-            Toast.makeText(this, "Error updating balance", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Deposit failed: ${it.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun validateInput(amountStr: String, phone: String): Boolean {
-        if (amountStr.isEmpty()) {
-            Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        val amount = amountStr.toDoubleOrNull()
-        if (amount == null || amount <= 0) {
-            Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+        if (amountStr.isEmpty() || (amountStr.toDoubleOrNull() ?: 0.0) <= 0) {
+            Toast.makeText(this, "Valid amount required", Toast.LENGTH_SHORT).show()
             return false
         }
         if (phone.length < 10) {
-            Toast.makeText(this, "Please enter a valid phone number", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Valid phone number required", Toast.LENGTH_SHORT).show()
             return false
         }
         return true

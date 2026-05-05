@@ -1,10 +1,8 @@
 package com.example.tusevinge
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.*
@@ -32,6 +30,8 @@ class DashboardActivity : AppCompatActivity() {
     private var balance: Double = 0.0
     private val savingsGoal: Double = 100000.0
     private lateinit var username: String
+    // Updated to your new Database URL
+    private val DB_URL = "https://savingsapp-e1241-default-rtdb.firebaseio.com/"
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -111,11 +111,10 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun loadUserProfile(username: String) {
-        val dbRef = FirebaseDatabase.getInstance().getReference("users").child(username)
+        val dbRef = FirebaseDatabase.getInstance(DB_URL).getReference("users").child(username)
         dbRef.child("profileImageUri").get().addOnSuccessListener { snapshot ->
             val uriString = snapshot.value?.toString()
             if (!uriString.isNullOrEmpty()) {
-                // Using Picasso to load the Firebase Storage URL
                 Picasso.get().load(uriString).placeholder(R.drawable.tusevinge).into(imgProfile)
             }
         }
@@ -127,22 +126,15 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun fetchFirebaseBalance() {
-        val dbRef = FirebaseDatabase.getInstance().getReference("transactions").child(username)
-        dbRef.addValueEventListener(object : ValueEventListener {
+        val userRef = FirebaseDatabase.getInstance(DB_URL).getReference("users").child(username)
+        userRef.child("balance").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var currentBalance = 0.0
-                for (child in snapshot.children) {
-                    val type = child.child("type").value.toString()
-                    val amt = child.child("amount").value.toString().toDoubleOrNull() ?: 0.0
-                    if (type.lowercase() == "deposit") currentBalance += amt
-                    else currentBalance -= amt
-                }
-                balance = currentBalance
+                balance = snapshot.getValue(Double::class.java) ?: 0.0
                 updateDashboard()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@DashboardActivity, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DashboardActivity, "Update Failed: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -151,9 +143,5 @@ class DashboardActivity : AppCompatActivity() {
         balanceTextView.text = "Balance: UGX $balance"
         val progress = if (savingsGoal > 0) ((balance / savingsGoal) * 100).toInt() else 0
         goalProgressBar.progress = progress.coerceIn(0, 100)
-        
-        if (balance >= savingsGoal && savingsGoal > 0) {
-            Toast.makeText(this, "🎉 Savings Goal Achieved!", Toast.LENGTH_SHORT).show()
-        }
     }
 }

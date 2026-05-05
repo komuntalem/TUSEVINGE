@@ -9,9 +9,9 @@ interface TransactionDao {
     @Insert
     suspend fun insertTransaction(transaction: Transaction)
 
-    @Query("SELECT * FROM transactions ORDER BY id DESC")
+    @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
     suspend fun getAllTransactions(): List<Transaction>
 
-    @Query("SELECT TOTAL(CASE WHEN type = 'Deposit' THEN amount ELSE -amount END) FROM transactions")
+    @Query("SELECT TOTAL(CASE WHEN type = 'deposit' THEN amount ELSE -amount END) FROM transactions")
     suspend fun getBalance(): Double
 }

@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "326980580414",
-    "firebase_url": "https://tusevinge-default-rtdb.firebaseio.com",
-    "project_id": "tusevinge",
-    "storage_bucket": "tusevinge.firebasestorage.app"
+    "project_number": "651443458695",
+    "firebase_url": "https://savingsapp-e1241-default-rtdb.firebaseio.com",
+    "project_id": "savingsapp-e1241",
+    "storage_bucket": "savingsapp-e1241.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:326980580414:android:becf4a9f73653f4127cd6f",
+        "mobilesdk_app_id": "1:651443458695:android:0770110dc3fe62ae801e22",
         "android_client_info": {
           "package_name": "com.example.tusevinge"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBoMKZkNKlZRdyyZ_VZpb-nIfxEjl8GuTk"
+          "current_key": "AIzaSyALgV_odBq8tDE_GjkE8zGWUPxEhpQJJVg"
         }
       ],
       "services": {
@@ -27,7 +27,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:326980580414:android:c656897ef1db748b27cd6f",
+        "mobilesdk_app_id": "1:651443458695:android:0d5a72435bb6ef8e801e22",
         "android_client_info": {
           "package_name": "com.example.tusevingeadmin"
         }
@@ -35,7 +35,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBoMKZkNKlZRdyyZ_VZpb-nIfxEjl8GuTk"
+          "current_key": "AIzaSyALgV_odBq8tDE_GjkE8zGWUPxEhpQJJVg"
         }
       ],
       "services": {
