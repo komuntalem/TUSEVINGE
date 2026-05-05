@@ -4,13 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ECEFF1"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="40dp"> <!-- Added padding to lower the content -->
+        android:paddingTop="160dp"> <!-- Significantly increased padding -->
 
         <!-- Blue Hero Header -->
         <LinearLayout
@@ -33,7 +34,8 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerInside"
                     android:padding="12dp"
-                    android:src="@mipmap/logo" /> <!-- Replaced emoji with logo.png -->
+                    android:src="@mipmap/logo"
+                    android:contentDescription="Tusevinge Logo" />
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -136,6 +138,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="16dp"
                     android:visibility="gone" />
+
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

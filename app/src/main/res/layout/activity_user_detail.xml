@@ -14,23 +14,24 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:background="#1565C0"
-            android:paddingBottom="8dp"
-            app:navigationIcon="@drawable/ic_arrow_back_white"
+            android:minHeight="72dp"
+            app:navigationIcon="?attr/homeAsUpIndicator"
             app:title="Member Profile"
             app:titleTextColor="#FFFFFF" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="20dp">
 
             <!-- Profile Card -->
             <androidx.cardview.widget.CardView
